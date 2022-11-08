@@ -70,7 +70,9 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse(
                 'posts:profile',
-                kwargs={'username': self.user.username}))
+                kwargs={'username': self.user.username}
+            )
+        )
         self.assertEqual(response.context['author'], self.user)
         self.check_post_info(response.context['page_obj'][0])
 
@@ -79,7 +81,9 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse(
                 'posts:post_detail',
-                kwargs={'post_id': self.post.id}))
+                kwargs={'post_id': self.post.id}
+            )
+        )
         self.check_post_info(response.context['post'])
 
 
@@ -95,12 +99,14 @@ class PaginatorViewsTest(TestCase):
             slug='test_slug',
             description='Тестовое описание группы',
         )
-        for i in range(13):
-            Post.objects.create(
-                text=f'Пост #{i}',
-                author=cls.user,
-                group=cls.group
-            )
+        for number in range(13):
+            Post.objects.bulk_create([
+                Post(
+                    text=f'Пост #{number}',
+                    author=cls.user,
+                    group=cls.group
+                )
+            ])
 
     def setUp(self):
         self.unauthorized_client = Client()
@@ -120,7 +126,9 @@ class PaginatorViewsTest(TestCase):
                     reverse_).context.get('page_obj')),
                     posts_on_first_page
                 )
+        for reverse_ in url_pages:
+            with self.subTest(reverse_=reverse_):
                 self.assertEqual(len(self.unauthorized_client.get(
-                    reverse_ + '?page=2').context.get('page_obj')),
+                    reverse_, {'page': 2}).context.get('page_obj')),
                     posts_on_second_page
                 )

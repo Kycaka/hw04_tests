@@ -65,7 +65,8 @@ class PostFormTests(TestCase):
         response = self.authorized_user.post(
             reverse(
                 'posts:post_edit',
-                args=[post.id]),
+                args=[post.id]
+            ),
             data=form_data,
             follow=True
         )
@@ -75,9 +76,9 @@ class PostFormTests(TestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         post = Post.objects.latest('id')
-        self.assertTrue(post.text == form_data['text'])
-        self.assertTrue(post.author == self.post_author)
-        self.assertTrue(post.group_id == form_data['group'])
+        self.assertEqual(post.text, form_data['text'])
+        self.assertEqual(post.author, self.post_author)
+        self.assertEqual(post.group_id, form_data['group'])
 
     def test_nonauthorized_user_create_post(self):
         """Проверка создания записи не авторизированным пользователем."""

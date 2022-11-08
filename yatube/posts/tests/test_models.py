@@ -20,7 +20,7 @@ class PostModelTest(TestCase):
         )
         cls.post = Post.objects.create(
             author=cls.user,
-            text='Тестовый пост',
+            text='Тестовый пост больше 15 символов',
         )
 
     def test_models_have_correct_object_names(self):
@@ -33,4 +33,4 @@ class PostModelTest(TestCase):
         }
         for field, expected in expected_object_names.items():
             with self.subTest(field=field):
-                self.assertEqual(expected, str(field))
+                self.assertEqual(expected, str(field)[:SHORT_GROUP_TEXT])
