@@ -58,9 +58,14 @@ class PostFormTests(TestCase):
             author=self.post_author,
             group=self.group,
         )
+        self.group_2 = Group.objects.create(
+            title='Тестовая группа 2',
+            slug='test_group',
+            description='Описание'
+        )
         form_data = {
             'text': 'Отредактированный текст поста',
-            'group': self.group.id,
+            'group': self.group_2.id,
         }
         response = self.authorized_user.post(
             reverse(
@@ -74,8 +79,8 @@ class PostFormTests(TestCase):
             response,
             reverse('posts:post_detail', kwargs={'post_id': post.id})
         )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
         post = Post.objects.latest('id')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(post.text, form_data['text'])
         self.assertEqual(post.author, self.post_author)
         self.assertEqual(post.group_id, form_data['group'])

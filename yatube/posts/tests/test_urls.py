@@ -102,15 +102,20 @@ class PostsUrlsTests(TestCase):
         """Проверка ссылок авторизованному пользователю - не автору поста."""
         for template, reverse_name in self.templates_url_names.items():
             with self.subTest():
-                if reverse_name == reverse(
-                    'posts:post_edit',
-                    kwargs={'post_id': self.post.id},
-                ):
-                    response = self.no_author_client.get(reverse_name)
-                    self.assertEqual(response.status_code, HTTPStatus.FOUND)
-                else:
-                    response = self.no_author_client.get(reverse_name)
-                    self.assertEqual(response.status_code, HTTPStatus.OK)
+                response = self.guest_client.get(
+                    reverse(
+                        'posts:post_edit',
+                        kwargs={'post_id': self.post.id},
+                    )
+                )
+                self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
+    def test_urls_no_authorized_user_2(self):
+        """Проверка ссылок авторизованному пользователю - не автору поста 2."""
+        for template, reverse_name in self.templates_url_names.items():
+            with self.subTest():
+                response = self.no_author_client.get(reverse_name)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_urls_use_correct_template(self):
         """Проверка на то что URL-адрес использует подходящий шаблон."""

@@ -126,8 +126,6 @@ class PaginatorViewsTest(TestCase):
                     reverse_).context.get('page_obj')),
                     posts_on_first_page
                 )
-        for reverse_ in url_pages:
-            with self.subTest(reverse_=reverse_):
                 self.assertEqual(len(self.unauthorized_client.get(
                     reverse_, {'page': 2}).context.get('page_obj')),
                     posts_on_second_page
