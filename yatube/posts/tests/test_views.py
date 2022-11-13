@@ -121,12 +121,13 @@ class PaginatorViewsTest(TestCase):
             reverse('posts:profile', kwargs={'username': self.user.username}),
         ]
         for reverse_ in url_pages:
-            with self.subTest(reverse_=reverse_):
-                self.assertEqual(len(self.unauthorized_client.get(
-                    reverse_).context.get('page_obj')),
-                    posts_on_first_page
-                )
-                self.assertEqual(len(self.unauthorized_client.get(
-                    reverse_, {'page': 2}).context.get('page_obj')),
-                    posts_on_second_page
-                )
+            for client in url_pages:
+                with self.subTest(reverse_=reverse_):
+                    self.assertEqual(len(self.unauthorized_client.get(
+                        client).context.get('page_obj')),
+                        posts_on_first_page
+                    )
+                    self.assertEqual(len(self.unauthorized_client.get(
+                        reverse_, {'page': 2}).context.get('page_obj')),
+                        posts_on_second_page
+                    )
