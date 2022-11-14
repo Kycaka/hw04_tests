@@ -107,27 +107,31 @@ class PaginatorViewsTest(TestCase):
                     group=cls.group
                 )
             ])
+        cls.url_pages = [
+            reverse('posts:index'),
+            reverse('posts:group_list', kwargs={'slug': cls.group.slug}),
+            reverse('posts:profile', kwargs={'username': cls.user.username}),
+        ]
 
     def setUp(self):
         self.unauthorized_client = Client()
 
-    def test_paginator_on_pages(self):
-        """Проверка пагинации на страницах."""
+    def test_paginator_on_first_page(self):
+        """Проверка пагинации на первой странице."""
         posts_on_first_page = 10
+        for reverse_ in self.url_pages:
+            with self.subTest(reverse_=reverse_):
+                self.assertEqual(len(self.unauthorized_client.get(
+                    reverse_).context.get('page_obj')),
+                    posts_on_first_page
+                )
+
+    def test_paginator_on_second_page(self):
+        """Проверка пагинации на второй странице."""
         posts_on_second_page = 3
-        url_pages = [
-            reverse('posts:index'),
-            reverse('posts:group_list', kwargs={'slug': self.group.slug}),
-            reverse('posts:profile', kwargs={'username': self.user.username}),
-        ]
-        for reverse_ in url_pages:
-            for client in url_pages:
-                with self.subTest(reverse_=reverse_):
-                    self.assertEqual(len(self.unauthorized_client.get(
-                        client).context.get('page_obj')),
-                        posts_on_first_page
-                    )
-                    self.assertEqual(len(self.unauthorized_client.get(
-                        reverse_, {'page': 2}).context.get('page_obj')),
-                        posts_on_second_page
-                    )
+        for reverse_ in self.url_pages:
+            with self.subTest(reverse_=reverse_):
+                self.assertEqual(len(self.unauthorized_client.get(
+                    reverse_, {'page': 2}).context.get('page_obj')),
+                    posts_on_second_page
+                )
